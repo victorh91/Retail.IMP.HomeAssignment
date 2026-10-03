@@ -24,6 +24,54 @@ function average(values: number[]): number {
   );
 }
 
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-gray-600">{label}</dt>
+      <dd className="text-lg font-semibold">{value}</dd>
+    </div>
+  );
+}
+
+/** Keyboard and screen reader access to the values behind the mouse-only tooltip. */
+function TemperatureTable({ days }: { days: HistoryDay[] }) {
+  return (
+    <details className="mt-4 text-sm">
+      <summary className="cursor-pointer text-gray-700">
+        Show daily data as a table
+      </summary>
+      <table className="mt-2 w-full text-left">
+        <caption className="sr-only">
+          Daily low and high temperatures from {days[0].date} to{" "}
+          {days[days.length - 1].date}
+        </caption>
+        <thead>
+          <tr className="border-b text-gray-600">
+            <th scope="col" className="py-1">
+              Date
+            </th>
+            <th scope="col" className="py-1">
+              Low
+            </th>
+            <th scope="col" className="py-1">
+              High
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {days.map((day) => (
+            <tr key={day.date} className="border-b border-gray-100">
+              <td className="py-1">{day.date}</td>
+              <td className="py-1">{day.low}°C</td>
+              <td className="py-1">{day.high}°C</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </details>
+  );
+}
+
 export function TemperatureHistoryChart({
   days,
 }: TemperatureHistoryChartProps) {
@@ -53,30 +101,22 @@ export function TemperatureHistoryChart({
         id={summaryId}
         className="mb-4 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4"
       >
-        <div>
-          <dt className="text-gray-600">Average high</dt>
-          <dd className="text-lg font-semibold">
-            {average(days.map((day) => day.high))}°C
-          </dd>
-        </div>
-        <div>
-          <dt className="text-gray-600">Average low</dt>
-          <dd className="text-lg font-semibold">
-            {average(days.map((day) => day.low))}°C
-          </dd>
-        </div>
-        <div>
-          <dt className="text-gray-600">Warmest day</dt>
-          <dd className="text-lg font-semibold">
-            {formatDate(warmest.date)} ({warmest.high}°C)
-          </dd>
-        </div>
-        <div>
-          <dt className="text-gray-600">Coldest night</dt>
-          <dd className="text-lg font-semibold">
-            {formatDate(coldest.date)} ({coldest.low}°C)
-          </dd>
-        </div>
+        <Stat
+          label="Average high"
+          value={`${average(days.map((day) => day.high))}°C`}
+        />
+        <Stat
+          label="Average low"
+          value={`${average(days.map((day) => day.low))}°C`}
+        />
+        <Stat
+          label="Warmest day"
+          value={`${formatDate(warmest.date)} (${warmest.high}°C)`}
+        />
+        <Stat
+          label="Coldest night"
+          value={`${formatDate(coldest.date)} (${coldest.low}°C)`}
+        />
       </dl>
 
       <div className="h-80">
@@ -131,39 +171,7 @@ export function TemperatureHistoryChart({
         />
       </div>
 
-      {/* Keyboard and screen reader access to the values behind the mouse-only tooltip. */}
-      <details className="mt-4 text-sm">
-        <summary className="cursor-pointer text-gray-700">
-          Show daily data as a table
-        </summary>
-        <table className="mt-2 w-full text-left">
-          <caption className="sr-only">
-            Daily low and high temperatures from {first} to {last}
-          </caption>
-          <thead>
-            <tr className="border-b text-gray-600">
-              <th scope="col" className="py-1">
-                Date
-              </th>
-              <th scope="col" className="py-1">
-                Low
-              </th>
-              <th scope="col" className="py-1">
-                High
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {days.map((day) => (
-              <tr key={day.date} className="border-b border-gray-100">
-                <td className="py-1">{day.date}</td>
-                <td className="py-1">{day.low}°C</td>
-                <td className="py-1">{day.high}°C</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </details>
+      <TemperatureTable days={days} />
     </div>
   );
 }
