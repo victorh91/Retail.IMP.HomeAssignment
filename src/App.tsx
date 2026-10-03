@@ -1,5 +1,7 @@
+import { ErrorPage } from "./components/ErrorPage";
 import { Dashboard } from "./pages/Dashboard";
 import {
+  Link,
   Navigate,
   RouterProvider,
   createBrowserRouter,
@@ -7,20 +9,25 @@ import {
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Navigate to="/home" />,
-  },
-  {
-    path: "/home",
-    element: (
-      <div>
-        <a href="/dashboard">Open Dashboard</a>
-      </div>
-    ),
-  },
-  {
-    path: "/dashboard",
-    element: <Dashboard />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "/",
+        element: <Navigate to="/home" />,
+      },
+      {
+        path: "/home",
+        element: (
+          <div>
+            <Link to="/dashboard">Open Dashboard</Link>
+          </div>
+        ),
+      },
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
+    ],
   },
 ]);
 
