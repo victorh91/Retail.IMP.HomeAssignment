@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import type { HistoryResponse } from "./types";
+import type { HistoryResponse, Status } from "./types";
 import { fetchHistory } from "./weatherApi";
-
-type Status = "loading" | "error" | "success";
 
 interface HistoryResult {
   date: string;
@@ -22,7 +20,7 @@ export function useHistory(date: string) {
 
   useEffect(() => {
     const controller = new AbortController();
-    
+
     fetchHistory(date, controller.signal)
       .then((data) => setResult({ date, data }))
       .catch((error: Error) => {
@@ -30,9 +28,7 @@ export function useHistory(date: string) {
         setResult({ date, error });
       });
 
-    return () => {
-      controller.abort();
-    };
+    return () => controller.abort();
   }, [date]);
 
   return {

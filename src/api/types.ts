@@ -1,6 +1,7 @@
-// All temperatures are in °C, all dates are "YYYY-MM-DD".
 
 export type Condition = "sunny" | "cloudy" | "rainy";
+
+export type Status = "loading" | "error" | "success";
 
 export interface CurrentWeather {
   temperature: number;
