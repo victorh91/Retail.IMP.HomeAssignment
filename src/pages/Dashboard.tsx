@@ -5,7 +5,10 @@ import { CurrentWeatherCard } from "../components/CurrentWeatherCard";
 import { DataCard } from "../components/DataCard";
 import { DatePicker } from "../components/DatePicker";
 import { TemperatureHistoryChart } from "../components/TemperatureHistoryChart";
-import { isValidIsoDate, todayLocal } from "../utils/date";
+import { formatDayRange, isValidIsoDate, todayLocal } from "../utils/date";
+
+// Matches the number of days the history API returns.
+const HISTORY_DAYS = 90;
 
 export function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,7 +48,7 @@ export function Dashboard() {
         </DataCard>
 
         <DataCard
-          title={`Temperature history – 90 days up to ${date}`}
+          title={`Temperature history, ${formatDayRange(date, HISTORY_DAYS)}`}
           status={history.status}
           error={history.error}
         >

@@ -9,7 +9,6 @@ import {
 const router = createBrowserRouter([
   {
     errorElement: <ErrorPage />,
-    // Shown on first load while a lazy route (e.g. /dashboard) is downloading.
     hydrateFallbackElement: (
       <p className="p-6 text-gray-500" aria-live="polite">
         Loading…
@@ -26,7 +25,6 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard",
-        // Loaded on demand so the charting libraries stay out of the initial bundle.
         lazy: async () => {
           const { Dashboard } = await import("./pages/Dashboard");
           return { Component: Dashboard };

@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { isValidIsoDate } from "./date";
+import { formatDayRange, isValidIsoDate } from "./date";
+
+describe("formatDayRange", () => {
+  it("shows the year once when the range is within one year", () => {
+    expect(formatDayRange("2026-10-03", 90)).toBe("Jul 6 – Oct 3, 2026");
+  });
+
+  it("shows both years when the range crosses New Year", () => {
+    expect(formatDayRange("2025-03-10", 90)).toBe(
+      "Dec 11, 2024 – Mar 10, 2025",
+    );
+  });
+});
 
 describe("isValidIsoDate", () => {
   it.each([

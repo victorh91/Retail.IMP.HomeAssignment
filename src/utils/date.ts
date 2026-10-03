@@ -8,6 +8,20 @@ export function todayLocal(): string {
   return `${year}-${month}-${day}`;
 }
 
+/** Readable range for `days` days ending on `endDate`, e.g. "Jul 6 – Oct 3, 2026". */
+export function formatDayRange(endDate: string, days: number): string {
+  const end = new Date(`${endDate}T00:00:00`);
+  const start = new Date(end);
+  start.setDate(end.getDate() - (days - 1));
+
+  const monthDay = { month: "short", day: "numeric" } as const;
+  const withYear = { ...monthDay, year: "numeric" } as const;
+  const startFormat =
+    start.getFullYear() === end.getFullYear() ? monthDay : withYear;
+
+  return `${start.toLocaleDateString("en-US", startFormat)} – ${end.toLocaleDateString("en-US", withYear)}`;
+}
+
 /** True for a real calendar date in "YYYY-MM-DD" format, e.g. rejects "2025-02-30". */
 export function isValidIsoDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;

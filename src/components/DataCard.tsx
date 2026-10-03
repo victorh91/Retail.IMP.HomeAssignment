@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { getUserMessage } from "../api/errors";
 import type { Status } from "../api/types";
 
 interface DataCardProps {
@@ -23,9 +24,9 @@ export function DataCard({ title, status, error, children }: DataCardProps) {
         </span>
       </div>
 
-      {status === "error" ? (
+      {status === "error" && error ? (
         <p role="alert" className="text-red-700">
-          Could not load data: {error?.message}
+          {getUserMessage(error)}
         </p>
       ) : (
         // Previous data stays visible but dimmed while new data loads.

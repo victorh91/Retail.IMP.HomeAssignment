@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { server } from "../mocks/server";
@@ -38,15 +38,45 @@ describe("Dashboard", () => {
       await screen.findByRole("img", { name: /to 2025-03-10$/ }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /90 days up to 2025-03-10/ }),
+      screen.getByRole("heading", { name: /Dec 11, 2024 – Mar 10, 2025/ }),
     ).toBeInTheDocument();
   });
 
-  it("shows an error for history but keeps the forecast when history fails", async () => {
+  it("shows the latest selected date even if an earlier request answers last", async () => {
+    server.use(
+      http.get("/api/weather/history", async ({ request }) => {
+        const date = new URL(request.url).searchParams.get("date")!;
+        if (date === "2025-03-10") await delay(300);
+        return HttpResponse.json({
+          location: "New York",
+          days: [{ date, low: 10, high: 20 }],
+        });
+      }),
+    );
+
+    renderDashboard("/dashboard?date=2025-05-01");
+    await screen.findByRole("img", { name: /to 2025-05-01$/ });
+
+    const datePicker = screen.getByLabelText("Select date:");
+    fireEvent.change(datePicker, { target: { value: "2025-03-10" } });
+    fireEvent.change(datePicker, { target: { value: "2025-04-20" } });
+
+    expect(
+      await screen.findByRole("img", { name: /to 2025-04-20$/ }),
+    ).toBeInTheDocument();
+
+    // Give the slow 2025-03-10 response time to (wrongly) overwrite the newer one.
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    expect(
+      screen.getByRole("img", { name: /to 2025-04-20$/ }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a user-friendly error but keeps the forecast when history fails", async () => {
     server.use(
       http.get("/api/weather/history", () =>
         HttpResponse.json(
-          { error: "History service is down" },
+          { error: "Internal details the user should not see" },
           { status: 500 },
         ),
       ),
@@ -55,7 +85,7 @@ describe("Dashboard", () => {
     renderDashboard("/dashboard?date=2025-05-01");
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "History service is down",
+      "The weather service is having problems. Please try again later.",
     );
     expect(await screen.findByText(/in New York/)).toBeInTheDocument();
   });
