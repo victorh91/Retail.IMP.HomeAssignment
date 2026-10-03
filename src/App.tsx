@@ -1,5 +1,4 @@
 import { ErrorPage } from "./components/ErrorPage";
-import { Dashboard } from "./pages/Dashboard";
 import { Home } from "./pages/Home";
 import {
   Navigate,
@@ -10,6 +9,12 @@ import {
 const router = createBrowserRouter([
   {
     errorElement: <ErrorPage />,
+    // Shown on first load while a lazy route (e.g. /dashboard) is downloading.
+    hydrateFallbackElement: (
+      <p className="p-6 text-gray-500" aria-live="polite">
+        Loading…
+      </p>
+    ),
     children: [
       {
         path: "/",
@@ -21,7 +26,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard",
-        element: <Dashboard />,
+        // Loaded on demand so the charting libraries stay out of the initial bundle.
+        lazy: async () => {
+          const { Dashboard } = await import("./pages/Dashboard");
+          return { Component: Dashboard };
+        },
       },
     ],
   },
