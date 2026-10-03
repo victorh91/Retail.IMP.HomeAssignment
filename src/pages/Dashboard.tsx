@@ -6,12 +6,17 @@ import { useHistory } from "../api/useHistory";
 import { CurrentWeatherCard } from "../components/CurrentWeatherCard";
 import { DatePicker } from "../components/DatePicker";
 import { TemperatureHistoryChart } from "../components/TemperatureHistoryChart";
-import { todayLocal } from "../utils/date";
+import { isValidIsoDate, todayLocal } from "../utils/date";
 
 export function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const today = todayLocal();
-  const date = searchParams.get("date") ?? today;
+  const dateParam = searchParams.get("date");
+  // The URL is user input: fall back to today for missing, malformed or future dates.
+  const date =
+    dateParam && isValidIsoDate(dateParam) && dateParam <= today
+      ? dateParam
+      : today;
 
   const history = useHistory(date);
   const forecast = useForecast();

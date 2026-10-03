@@ -1,7 +1,7 @@
 import { ErrorPage } from "./components/ErrorPage";
 import { Dashboard } from "./pages/Dashboard";
+import { Home } from "./pages/Home";
 import {
-  Link,
   Navigate,
   RouterProvider,
   createBrowserRouter,
@@ -17,11 +17,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/home",
-        element: (
-          <div>
-            <Link to="/dashboard">Open Dashboard</Link>
-          </div>
-        ),
+        element: <Home />,
       },
       {
         path: "/dashboard",

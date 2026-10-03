@@ -12,7 +12,8 @@ async function enableMocking() {
 
   // `worker.start()` returns a Promise that resolves
   // once the Service Worker is up and ready to intercept requests.
-  return worker.start();
+  // "bypass" lets page navigations and assets through without warnings.
+  return worker.start({ onUnhandledFrame: "bypass" });
 }
 
 enableMocking().then(() => {
