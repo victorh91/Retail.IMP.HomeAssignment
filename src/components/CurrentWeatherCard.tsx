@@ -1,5 +1,6 @@
 import { RiCloudyLine, RiRainyLine, RiSunLine } from "@remixicon/react";
 import type { Condition, ForecastResponse } from "../api/types";
+import { formatTemperature } from "../utils/temperature";
 
 const CONDITION_ICONS: Record<Condition, typeof RiSunLine> = {
   sunny: RiSunLine,
@@ -20,7 +21,7 @@ export function CurrentWeatherCard({ forecast }: CurrentWeatherCardProps) {
         <CurrentIcon className="size-14 text-amber-500" aria-hidden />
         <div>
           <p className="text-4xl font-semibold text-gray-900">
-            {forecast.current.temperature}°C
+            {formatTemperature(forecast.current.temperature, forecast.unit)}
           </p>
           <p className="text-gray-600">
             <span className="capitalize">{forecast.current.condition}</span> in{" "}
@@ -38,7 +39,9 @@ export function CurrentWeatherCard({ forecast }: CurrentWeatherCardProps) {
               <p className="text-sm text-gray-600">{day.day}</p>
               <Icon className="mx-auto my-2 size-7 text-gray-700" aria-hidden />
               <p className="sr-only">{day.condition}</p>
-              <p className="font-medium text-gray-900">{day.temperature}°C</p>
+              <p className="font-medium text-gray-900">
+                {formatTemperature(day.temperature, forecast.unit)}
+              </p>
             </li>
           );
         })}

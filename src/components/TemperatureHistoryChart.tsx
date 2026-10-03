@@ -1,6 +1,7 @@
 import { ResponsiveLine } from "@nivo/line";
 import { useId } from "react";
-import type { HistoryDay } from "../api/types";
+import type { HistoryDay, TemperatureUnit } from "../api/types";
+import { formatTemperature } from "../utils/temperature";
 
 const HIGH_COLOR = "#f97316";
 const LOW_COLOR = "#3b82f6";
@@ -8,6 +9,7 @@ const DAYS_BETWEEN_TICKS = 14;
 
 interface TemperatureHistoryChartProps {
   days: HistoryDay[];
+  unit: TemperatureUnit;
 }
 
 function formatDate(isoDate: string): string {
@@ -34,7 +36,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 /** Keyboard and screen reader access to the values behind the mouse-only tooltip. */
-function TemperatureTable({ days }: { days: HistoryDay[] }) {
+function TemperatureTable({ days, unit }: TemperatureHistoryChartProps) {
   return (
     <details className="mt-4 text-sm">
       <summary className="cursor-pointer text-gray-700">
@@ -62,8 +64,8 @@ function TemperatureTable({ days }: { days: HistoryDay[] }) {
           {days.map((day) => (
             <tr key={day.date} className="border-b border-gray-100">
               <td className="py-1">{day.date}</td>
-              <td className="py-1">{day.low}°C</td>
-              <td className="py-1">{day.high}°C</td>
+              <td className="py-1">{formatTemperature(day.low, unit)}</td>
+              <td className="py-1">{formatTemperature(day.high, unit)}</td>
             </tr>
           ))}
         </tbody>
@@ -74,6 +76,7 @@ function TemperatureTable({ days }: { days: HistoryDay[] }) {
 
 export function TemperatureHistoryChart({
   days,
+  unit,
 }: TemperatureHistoryChartProps) {
   const summaryId = useId();
 
@@ -103,19 +106,19 @@ export function TemperatureHistoryChart({
       >
         <Stat
           label="Average high"
-          value={`${average(days.map((day) => day.high))}°C`}
+          value={formatTemperature(average(days.map((day) => day.high)), unit)}
         />
         <Stat
           label="Average low"
-          value={`${average(days.map((day) => day.low))}°C`}
+          value={formatTemperature(average(days.map((day) => day.low)), unit)}
         />
         <Stat
           label="Warmest day"
-          value={`${formatDate(warmest.date)} (${warmest.high}°C)`}
+          value={`${formatDate(warmest.date)} (${formatTemperature(warmest.high, unit)})`}
         />
         <Stat
           label="Coldest night"
-          value={`${formatDate(coldest.date)} (${coldest.low}°C)`}
+          value={`${formatDate(coldest.date)} (${formatTemperature(coldest.low, unit)})`}
         />
       </dl>
 
@@ -137,7 +140,7 @@ export function TemperatureHistoryChart({
             tickPadding: 8,
           }}
           axisLeft={{
-            format: (value) => `${value}°C`,
+            format: (value) => formatTemperature(Number(value), unit),
             tickSize: 0,
             tickPadding: 8,
           }}
@@ -149,7 +152,8 @@ export function TemperatureHistoryChart({
               </p>
               {slice.points.map((point) => (
                 <p key={point.id} style={{ color: point.seriesColor }}>
-                  {point.seriesId}: {point.data.yFormatted}°C
+                  {point.seriesId}:{" "}
+                  {formatTemperature(Number(point.data.y), unit)}
                 </p>
               ))}
             </div>
@@ -171,7 +175,7 @@ export function TemperatureHistoryChart({
         />
       </div>
 
-      <TemperatureTable days={days} />
+      <TemperatureTable days={days} unit={unit} />
     </div>
   );
 }

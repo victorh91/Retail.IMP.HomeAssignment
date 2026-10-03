@@ -49,6 +49,7 @@ describe("Dashboard", () => {
         if (date === "2025-03-10") await delay(300);
         return HttpResponse.json({
           location: "New York",
+          unit: "celsius",
           days: [{ date, low: 10, high: 20 }],
         });
       }),

@@ -1,4 +1,6 @@
+import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
+import { server } from "../mocks/server";
 import { ApiError } from "./errors";
 import { fetchHistory } from "./weatherApi";
 
@@ -19,5 +21,20 @@ describe("fetchHistory", () => {
 
     expect(error).toBeInstanceOf(ApiError);
     expect(error).toMatchObject({ status: 400, message });
+  });
+
+  it("rejects a 200 response with the wrong shape", async () => {
+    server.use(
+      http.get("/api/weather/history", () =>
+        HttpResponse.json({ location: "New York", days: "not a list" }),
+      ),
+    );
+
+    const error = await fetchHistory("2025-05-01").catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error).toMatchObject({
+      message: "Unexpected response format from server.",
+    });
   });
 });

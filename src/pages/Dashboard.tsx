@@ -52,7 +52,12 @@ export function Dashboard() {
           status={history.status}
           error={history.error}
         >
-          {history.data && <TemperatureHistoryChart days={history.data.days} />}
+          {history.data && (
+            <TemperatureHistoryChart
+              days={history.data.days}
+              unit={history.data.unit}
+            />
+          )}
         </DataCard>
       </main>
     </div>

@@ -38,6 +38,7 @@ export const handlers = [
       await delay();
       return HttpResponse.json({
         location: "New York",
+        unit: "celsius",
         current: { temperature: 20, condition: "sunny" },
         forecast: [
           { day: "Monday", temperature: 18, condition: "cloudy" },
@@ -72,6 +73,7 @@ export const handlers = [
 
       return HttpResponse.json({
         location: "New York",
+        unit: "celsius",
         days: generateHistory(new Date(date)),
       });
     },

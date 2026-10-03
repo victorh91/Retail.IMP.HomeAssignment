@@ -1,7 +1,13 @@
+import type { z } from "zod";
 import type { ApiErrorBody, ForecastResponse, HistoryResponse } from "./types";
 import { ApiError } from "./errors";
+import { forecastResponseSchema, historyResponseSchema } from "./schemas";
 
-async function request<T>(url: URL, signal?: AbortSignal): Promise<T> {
+async function request<T>(
+  url: URL,
+  schema: z.ZodType<T>,
+  signal?: AbortSignal,
+): Promise<T> {
   const res = await fetch(url.toString(), { signal });
 
   if (!res.ok) {
@@ -18,12 +24,14 @@ async function request<T>(url: URL, signal?: AbortSignal): Promise<T> {
     throw new ApiError(res.status, message);
   }
 
-  // A proxy, login page or SPA fallback can answer 200 with HTML.
-  if (!res.headers.get("content-type")?.includes("application/json")) {
+  // Catches both non-JSON bodies (e.g. an HTML login page) and JSON in the wrong shape.
+  const body: unknown = await res.json().catch(() => undefined);
+  const parsed = schema.safeParse(body);
+  if (!parsed.success) {
     throw new ApiError(res.status, "Unexpected response format from server.");
   }
 
-  return res.json();
+  return parsed.data;
 }
 
 export async function fetchHistory(
@@ -33,7 +41,7 @@ export async function fetchHistory(
   const url = new URL("/api/weather/history", window.location.origin);
   url.searchParams.set("date", date);
 
-  return request<HistoryResponse>(url, signal);
+  return request(url, historyResponseSchema, signal);
 }
 
 export async function fetchForecast(
@@ -41,5 +49,5 @@ export async function fetchForecast(
 ): Promise<ForecastResponse> {
   const url = new URL("/api/weather/forecast", window.location.origin);
 
-  return request<ForecastResponse>(url, signal);
+  return request(url, forecastResponseSchema, signal);
 }

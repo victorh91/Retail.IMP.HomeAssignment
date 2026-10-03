@@ -1,5 +1,6 @@
-
 export type Condition = "sunny" | "cloudy" | "rainy";
+
+export type TemperatureUnit = "celsius" | "fahrenheit";
 
 export type Status = "loading" | "error" | "success";
 
@@ -16,6 +17,7 @@ export interface ForecastDay {
 
 export interface ForecastResponse {
   location: string;
+  unit: TemperatureUnit;
   current: CurrentWeather;
   forecast: ForecastDay[];
 }
@@ -28,6 +30,7 @@ export interface HistoryDay {
 
 export interface HistoryResponse {
   location: string;
+  unit: TemperatureUnit;
   days: HistoryDay[];
 }
 
