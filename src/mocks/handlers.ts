@@ -5,6 +5,7 @@ import type {
   HistoryDay,
   HistoryResponse,
 } from "../api/types";
+import { isValidIsoDate, todayLocal } from "../utils/date";
 
 const HISTORY_DAYS = 90;
 
@@ -51,19 +52,27 @@ export const handlers = [
     "/api/weather/history",
     async ({ request }) => {
       await delay();
-      const dateParam = new URL(request.url).searchParams.get("date");
-      const endDate = dateParam ? new Date(dateParam) : new Date();
+      // The mock runs in the browser, so "today" is the same local date the client uses.
+      const today = todayLocal();
+      const date = new URL(request.url).searchParams.get("date") ?? today;
 
-      if (Number.isNaN(endDate.getTime())) {
+      if (!isValidIsoDate(date)) {
         return HttpResponse.json(
           { error: "`date` must be a valid YYYY-MM-DD date." },
           { status: 400 },
         );
       }
 
+      if (date > today) {
+        return HttpResponse.json(
+          { error: "`date` cannot be in the future." },
+          { status: 400 },
+        );
+      }
+
       return HttpResponse.json({
         location: "New York",
-        days: generateHistory(endDate),
+        days: generateHistory(new Date(date)),
       });
     },
   ),
