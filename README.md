@@ -53,3 +53,14 @@ Please modify the base application with the below requirements. Be creative, fee
 * Authentication
 * Permissions
 * User Experience
+
+
+## Solution notes
+
+### Running
+- `npm run dev` – app with mocked API
+- `npm test` – integration tests (Vitest + Testing Library + MSW)
+
+### Assumptions
+- The date picker controls the history (90 days ending on the selected date). Forecast is static.
+- Invalid or future dates in the URL fall back to today.
