@@ -2,3 +2,7 @@
 
 @plugin "@headlessui/tailwindcss";
 @plugin "@tailwindcss/forms";
+
+@theme {
+  --color-brand: #3dcd58;
+}
