@@ -7,7 +7,7 @@ function getErrorMessage(error: unknown): string {
   return "Unknown error";
 }
 
-export const ErrorPage = () => {
+export function ErrorPage() {
   const error = useRouteError();
 
   return (
@@ -19,4 +19,4 @@ export const ErrorPage = () => {
       </Link>
     </div>
   );
-};
+}

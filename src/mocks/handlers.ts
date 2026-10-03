@@ -9,8 +9,9 @@ import type {
 const HISTORY_DAYS = 90;
 
 /** Random whole number between min and max (inclusive). */
-const randomInt = (min: number, max: number) =>
-  min + Math.floor(Math.random() * (max - min + 1));
+function randomInt(min: number, max: number): number {
+  return min + Math.floor(Math.random() * (max - min + 1));
+}
 
 /** HISTORY_DAYS consecutive days of random temperatures, ending on `endDate`. */
 function generateHistory(endDate: Date): HistoryDay[] {

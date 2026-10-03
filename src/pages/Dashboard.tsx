@@ -19,7 +19,7 @@ const chartdata = [
   },
 ];
 
-export const Dashboard = () => {
+export function Dashboard() {
   fetch("/api/weather/forecast").then((r) => console.log(r));
 
   return (
@@ -32,7 +32,7 @@ export const Dashboard = () => {
       </div>
     </>
   );
-};
+}
 
 function ChartComponent() {
   return (
