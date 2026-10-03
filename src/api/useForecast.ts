@@ -21,9 +21,7 @@ export function useForecast() {
     const controller = new AbortController();
 
     fetchForecast(controller.signal)
-      .then((data) => {
-        setResult({ data });
-      })
+      .then((data) => setResult({ data }))
       .catch((error: Error) => {
         if (controller.signal.aborted) return;
         setResult({ error });

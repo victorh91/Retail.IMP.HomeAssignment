@@ -18,6 +18,11 @@ async function request<T>(url: URL, signal?: AbortSignal): Promise<T> {
     throw new ApiError(res.status, message);
   }
 
+  // A proxy, login page or SPA fallback can answer 200 with HTML.
+  if (!res.headers.get("content-type")?.includes("application/json")) {
+    throw new ApiError(res.status, "Unexpected response format from server.");
+  }
+
   return res.json();
 }
 

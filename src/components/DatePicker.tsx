@@ -1,14 +1,10 @@
-import type { Ref } from "react";
-
 interface DatePickerProps {
-  ref?: Ref<HTMLInputElement>;
   selectedDate: string;
   onDateChange: (date: string) => void;
   maxDate?: string;
 }
 
 export function DatePicker({
-  ref,
   selectedDate,
   onDateChange,
   maxDate,
@@ -18,7 +14,6 @@ export function DatePicker({
       Select date:
       <input
         className="rounded border-gray-300"
-        ref={ref}
         type="date"
         value={selectedDate}
         max={maxDate}

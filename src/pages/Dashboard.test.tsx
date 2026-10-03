@@ -59,4 +59,18 @@ describe("Dashboard", () => {
     );
     expect(await screen.findByText(/in New York/)).toBeInTheDocument();
   });
+
+  it("shows a clear error when the server answers 200 with HTML", async () => {
+    server.use(
+      http.get("/api/weather/history", () =>
+        HttpResponse.html("<!doctype html><html></html>"),
+      ),
+    );
+
+    renderDashboard("/dashboard?date=2025-05-01");
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Unexpected response format from server.",
+    );
+  });
 });
